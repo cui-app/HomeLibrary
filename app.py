@@ -42,3 +42,9 @@ def create_app(config_class=Config):
 if __name__ == '__main__':
     app = create_app()
     app.run(host='0.0.0.0', port=5000)
+
+# 在app.py的create_app函数中添加​
+@app.errorhandler(404)​
+def page_not_found(e):​
+    from flask import render_template​
+    return render_template('404.html'), 404
