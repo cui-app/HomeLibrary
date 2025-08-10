@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}邻里图书馆 - 首页{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded-3">
+    <h1 class="display-5 fw-bold">欢迎来到邻里图书馆</h1>
+    <p class="col-md-8 fs-4">在这里，您可以分享自己的书籍，也可以借阅邻居的藏书，让知识在社区中流动起来。</p>
+    <div class="mt-4">
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('books.add_book') }}" class="btn btn-primary btn-lg">贡献我的书籍</a>
+            <a href="{{ url_for('books.list_books') }}" class="btn btn-outline-secondary btn-lg ms-2">浏览所有书籍</a>
+        {% else %}
+            <a href="{{ url_for('users.register') }}" class="btn btn-primary btn-lg">立即注册</a>
+            <a href="{{ url_for('users.login') }}" class="btn btn-outline-secondary btn-lg ms-2">登录</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-5">
+    <h2 class="mb-4">推荐书籍</h2>
+    {% if books %}
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        {% for book in books %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">作者: {{ book.author }}</h6>
+                    <p class="card-text text-truncate">{{ book.description }}</p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('books.book_detail', id=book.id) }}" class="card-link">查看详情</a>
+                    {% if current_user.is_authenticated and book.available and book.owner_id != current_user.id %}
+                    <a href="{{ url_for('borrows.request_borrow', book_id=book.id) }}" class="card-link text-primary">借阅</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        目前还没有可借阅的书籍，快来添加您的第一本书吧！
+    </div>
+    {% endif %}
+    
+    <div class="text-center mt-4">
+        <a href="{{ url_for('books.list_books') }}" class="btn btn-outline-primary">查看更多书籍</a>
+    </div>
+</div>
+
+<div class="mt-5 bg-light p-4 rounded">
+    <h3>如何使用</h3>
+    <ol class="list-group list-group-numbered mt-3">
+        <li class="list-group-item">注册账号并完善个人信息</li>
+        <li class="list-group-item">添加您想分享的书籍到图书馆</li>
+        <li class="list-group-item">浏览书籍列表，找到感兴趣的书籍并借阅</li>
+        <li class="list-group-item">借阅期限为7天，到期后请及时归还</li>
+    </ol>
+</div>
+{% endblock %}
